@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[60]:
+# In[1]:
 
 
 import pprint
 import requests
 import pandas as pd
+from ESPNIDs import POSITION_MAP
 
 class League:
     
@@ -43,8 +44,8 @@ class League:
                               'trades': team['transactionCounter']['trades']
                               }
             team_id += 1
-        return self.fetch("mTeam")
-        #return Teams
+        #return self.fetch("mTeam")
+        return Teams
     
     def fetch_rosters(self):
         roster_data = self.fetch("mRoster")
@@ -69,8 +70,6 @@ class League:
         for i in range(1, 20):
             matchup_data = self.fetch("mMatchup&scoringPeriodId=" + str(i))
             matchups = matchup_data['schedule']
-#             reader = pprint.PrettyPrinter()
-#             reader.pprint(matchups)
             for matchup in matchups:
                 matchup_id = matchup['id']
                 if 'rosterForCurrentScoringPeriod' not in matchup['home'].keys():
@@ -81,11 +80,13 @@ class League:
                                         'homeRoster': [entry['playerPoolEntry']['player']['fullName'] for entry in matchup['home']['rosterForCurrentScoringPeriod']['entries']],
                                         'homeLineup': [entry['lineupSlotId'] for entry in matchup['home']['rosterForCurrentScoringPeriod']['entries']],
                                         'homeRosterScore': [entry['playerPoolEntry']['appliedStatTotal'] for entry in matchup['home']['rosterForCurrentScoringPeriod']['entries']],
+                                        'homeRosterEligibleSlots': [entry['playerPoolEntry']['player']['eligibleSlots'] for entry in matchup['home']['rosterForCurrentScoringPeriod']['entries']],
                                         'awayTeamId': matchup['away']['teamId'],
                                         'awayScore': matchup['away']['totalPoints'],
                                         'awayRoster': [entry['playerPoolEntry']['player']['fullName'] for entry in matchup['away']['rosterForCurrentScoringPeriod']['entries']],
                                         'awayLineup': [entry['lineupSlotId'] for entry in matchup['away']['rosterForCurrentScoringPeriod']['entries']],
                                         'awayRosterScore': [entry['playerPoolEntry']['appliedStatTotal'] for entry in matchup['away']['rosterForCurrentScoringPeriod']['entries']],
+                                        'awayRosterEligibleSlots': [entry['playerPoolEntry']['player']['eligibleSlots'] for entry in matchup['away']['rosterForCurrentScoringPeriod']['entries']],
                                         'winner': matchup['home']['teamId'] if matchup['winner'] == "HOME" else matchup['away']['teamId']}
         return Matchups
     
@@ -102,20 +103,6 @@ class League:
                                     'awayScore': matchup['away']['totalPoints'],
                                     'winner': matchup['home']['teamId'] if matchup['winner'] == "HOME" else matchup['away']['teamId']}
         return Matchups
-
-
-# In[61]:
-
-
-year = "2020"
-leagueID = "139889"
-espn_s2 = "AEBVAY4IP16BsQVvRgpY1hGOur4OKjZCVh6vfBIibHEoA5BHQCg3rZGBvbNbuESU3bQlfQzdveoAqNcmIhoBoO10gq2K%2FOhtdYamn6aQBihs%2FydsgoJehuJgLwAIdcaXlnehxcpTltR58fP0cX18vjZReJjo0OjZGUSOr3ff0Iuz1Ztt8c4rUkFJVTd8cEd%2BT76%2Bvva8s5iQGAfKTUfPA9P2k6xC33qYcaH%2FIYykwIC00PKoJOlysod9yM5bUrA39lpJ2WZQfdICgqXt5zu%2FYaDpiXVznvExI4BIoEFnEVfs3w%3D%3D"
-swid = "{65C194B8-D67C-4A07-8990-988E5F391434}"
-
-My_League = League(year, leagueID, espn_s2, swid)
-
-reader = pprint.PrettyPrinter()
-reader.pprint(My_League.fetch_matchup_rosters())
 
 
 # In[ ]:
