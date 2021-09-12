@@ -45,7 +45,7 @@ class League:
                               'trades': team['transactionCounter']['trades']
                               }
             team_id += 1
-        return self.fetch("mTeam")
+        return self.fetch_raw("mTeam")
         #return Teams
     
     def fetch_rosters(self):
